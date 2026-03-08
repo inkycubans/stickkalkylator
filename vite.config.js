@@ -9,6 +9,7 @@ export default defineConfig({
   },
   preview: {
     port: process.env.PORT || 4173,
-    host: true
+    host: true,
+    allowedHosts: ['stickkalkylator-production.up.railway.app']
   }
 })
