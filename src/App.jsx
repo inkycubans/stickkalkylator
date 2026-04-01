@@ -4,45 +4,73 @@ import Calculator from "./Calculator";
 import Inspector from "./Inspector";
 
 export default function App() {
-  const [results,       setResults]       = useState(null);
-  const [bystPlagg,     setBystPlagg]     = useState(106);
-  const [activeProject, setActiveProject] = useState(1);
-  const [activePanel,   setActivePanel]   = useState("all"); // all | binder | calc | inspector
+  const [results,        setResults]        = useState(null);
+  const [bystPlagg,      setBystPlagg]      = useState(106);
+  const [activeProject,  setActiveProject]  = useState(1);
+  const [activePanel,    setActivePanel]    = useState("all");
 
   function handleResultsChange(r, bp) {
     setResults(r);
     setBystPlagg(bp);
   }
 
-  // Panel visibility helpers
   const show = (id) => activePanel === "all" || activePanel === id;
 
   return (
-    <div style={{ fontFamily:"Georgia,serif", color:"#2c2416", height:"100vh", display:"flex", flexDirection:"column", background:"#faf7f2", overflow:"hidden" }}>
+    <div style={{
+      fontFamily: "'Georgia', 'Times New Roman', serif",
+      color: "#2c1f14",
+      height: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      background: "#f7f3ee",
+      overflow: "hidden",
+    }}>
 
       {/* ── Top bar ── */}
-      <div style={{ height:44, background:"#2c2416", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 16px", flexShrink:0, zIndex:10 }}>
+      <div style={{
+        height: 48,
+        background: "linear-gradient(135deg, #3d2b1a 0%, #5c3d24 50%, #7a5230 100%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 20px",
+        flexShrink: 0,
+        boxShadow: "0 2px 12px rgba(61,43,26,0.25)",
+      }}>
+        {/* Logo */}
         <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-          <span style={{ fontSize:18 }}>🧶</span>
-          <span style={{ color:"#c4a882", fontSize:14, fontWeight:"bold", letterSpacing:"0.04em" }}>Stickkalkylator</span>
-          <span style={{ color:"rgba(255,255,255,0.25)", fontSize:12, marginLeft:2 }}>· EPS</span>
+          <span style={{ fontSize:20 }}>🧶</span>
+          <div>
+            <span style={{ color:"#f0d9b5", fontSize:15, fontWeight:"bold", letterSpacing:"0.03em" }}>
+              Stickkalkylator
+            </span>
+            <span style={{ color:"rgba(240,217,181,0.45)", fontSize:11, marginLeft:8 }}>EPS</span>
+          </div>
         </div>
 
         {/* Panel switcher */}
-        <div style={{ display:"flex", gap:3 }}>
+        <div style={{ display:"flex", gap:4, background:"rgba(0,0,0,0.2)", borderRadius:20, padding:"3px" }}>
           {[
-            ["all",      "⊞",  "Alla"],
-            ["binder",   "📁", "Binder"],
-            ["calc",     "🧮", "Kalkyl"],
-            ["inspector","✨", "Inspector"],
+            ["all",       "⊞", "Alla"],
+            ["binder",    "📁","Binder"],
+            ["calc",      "🧮","Kalkyl"],
+            ["inspector", "✨","Assistent"],
           ].map(([id, icon, label]) => (
             <button key={id} onClick={() => setActivePanel(id)} style={{
-              padding:"3px 10px", borderRadius:12, border:"none",
-              background: activePanel===id ? "#c4a882" : "rgba(255,255,255,0.08)",
-              color: activePanel===id ? "#fff" : "rgba(255,255,255,0.55)",
-              fontSize:11, cursor:"pointer", fontFamily:"Georgia,serif",
-              transition:"all 0.15s", display:"flex", alignItems:"center", gap:4
-            }}><span>{icon}</span><span style={{ display:"none", "@media(minWidth:600px)":{ display:"inline" } }}>{label}</span></button>
+              padding: "4px 12px",
+              borderRadius: 16,
+              border: "none",
+              background: activePanel === id
+                ? "linear-gradient(135deg,#c4956a,#e8b88a)"
+                : "transparent",
+              color: activePanel === id ? "#fff" : "rgba(240,217,181,0.6)",
+              fontSize: 11,
+              cursor: "pointer",
+              fontFamily: "Georgia, serif",
+              transition: "all 0.2s",
+              fontWeight: activePanel === id ? "bold" : "normal",
+            }}>{icon} {label}</button>
           ))}
         </div>
       </div>
@@ -52,34 +80,37 @@ export default function App() {
 
         {/* BINDER */}
         <div style={{
-          width:        show("binder") ? (activePanel==="binder" ? "100%" : "250px") : "0",
-          minWidth:     show("binder") ? (activePanel==="binder" ? "100%" : "250px") : "0",
-          overflow:     "hidden",
-          borderRight:  show("binder") && activePanel!=="binder" ? "1px solid #ede8e0" : "none",
-          transition:   "all 0.3s ease",
-          flexShrink:   0,
+          width:      show("binder") ? (activePanel==="binder" ? "100%" : "240px") : "0",
+          minWidth:   show("binder") ? (activePanel==="binder" ? "100%" : "240px") : "0",
+          overflow:   "hidden",
+          borderRight: "1px solid #e8ddd0",
+          transition: "all 0.35s ease",
+          flexShrink: 0,
+          background: "linear-gradient(180deg, #fdf8f3 0%, #f7f0e8 100%)",
         }}>
           <Binder activeProject={activeProject} setActiveProject={setActiveProject} />
         </div>
 
         {/* CALCULATOR */}
         <div style={{
-          flex:        show("calc") ? 1 : 0,
-          minWidth:    show("calc") ? (activePanel==="calc" ? "100%" : "280px") : "0",
-          overflow:    "hidden",
-          borderRight: show("calc") && activePanel!=="calc" ? "1px solid #ede8e0" : "none",
-          transition:  "all 0.3s ease",
+          flex:       show("calc") ? 1 : 0,
+          minWidth:   show("calc") ? (activePanel==="calc" ? "100%" : "300px") : "0",
+          overflow:   "hidden",
+          borderRight: "1px solid #e8ddd0",
+          transition: "all 0.35s ease",
+          background: "#f7f3ee",
         }}>
           <Calculator onResultsChange={handleResultsChange} />
         </div>
 
         {/* INSPECTOR */}
         <div style={{
-          width:       show("inspector") ? (activePanel==="inspector" ? "100%" : "300px") : "0",
-          minWidth:    show("inspector") ? (activePanel==="inspector" ? "100%" : "300px") : "0",
-          overflow:    "hidden",
-          transition:  "all 0.3s ease",
-          flexShrink:  0,
+          width:     show("inspector") ? (activePanel==="inspector" ? "100%" : "310px") : "0",
+          minWidth:  show("inspector") ? (activePanel==="inspector" ? "100%" : "310px") : "0",
+          overflow:  "hidden",
+          transition:"all 0.35s ease",
+          flexShrink:0,
+          background:"linear-gradient(180deg,#fdf8f3 0%,#f7f0e8 100%)",
         }}>
           <Inspector results={results} bystPlagg={bystPlagg} />
         </div>
