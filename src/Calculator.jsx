@@ -213,8 +213,8 @@ function ValidationPanel({ results }) {
     },
     {
       label: "Ok-maskor jämnt delbara med 4 (raglan)",
-      ok:    results.skuldra.maskor % 4 === 0,
-      tip:   `${results.skuldra.maskor} maskor — ${results.skuldra.maskor % 4 === 0 ? "✓ delbart med 4" : `justera till ${results.skuldra.maskor - (results.skuldra.maskor % 4)} eller ${results.skuldra.maskor + (4 - results.skuldra.maskor % 4)}`}`,
+      ok:    results.ok.Y % 4 === 0,
+      tip:   `${results.ok.Y} maskor — ${results.ok.Y % 4 === 0 ? "✓ delbart med 4" : `justera till ${results.ok.Y - (results.ok.Y % 4)} eller ${results.ok.Y + (4 - results.ok.Y % 4)}`}`,
     },
     {
       label: "Ärmens maskor rimliga",
