@@ -36,13 +36,26 @@ function calcResults(bystKropp, ease, maskorPer10, varvPer10) {
     overarm:  Math.round(byst * PERCENT.overarm  * 10) / 10,
     underarm: Math.round(byst * PERCENT.underarm * 10) / 10,
     handled:  Math.round(byst * PERCENT.handled  * 10) / 10,
-    skuldra:  Math.round(byst * PERCENT.skuldra  * 10) / 10,
   };
-  const pcts = { hals:"40%", byst:"100%", overarm:"33%", underarm:"8%", handled:"20%", skuldra:"23%" };
+  const pcts = { hals:"40%", byst:"100%", overarm:"33%", underarm:"8%", handled:"20%" };
   const r = {};
   Object.keys(cms).forEach(k => {
     r[k] = { cm:cms[k], pct:pcts[k], maskor:Math.round(cms[k]*mpCm), varv:Math.round(cms[k]*vpCm) };
   });
+
+  // Ok-beräkning: Y = bystmaskor × 1.38
+  const bystMaskor = r.byst.maskor;
+  const Y  = Math.round(bystMaskor * 1.38);
+  const Y3 = Math.round(Y * (1 - 0.40)); // första ökning efter hals
+  const Y2 = Math.round(Y * (1 - 0.33)); // andra ökning
+  const Y1 = Math.round(Y * (1 - 0.25)); // tredje ökning innan delning
+
+  // Mudd
+  const armMudd  = Math.round(bystMaskor * 0.20);
+  const bystMudd = Math.round(bystMaskor * 0.85);
+
+  r.ok = { Y, Y1, Y2, Y3, armMudd, bystMudd };
+
   return r;
 }
 
@@ -465,20 +478,36 @@ export default function Calculator({ onResultsChange }) {
               maskor={results[key].maskor} varv={results[key].varv} />
           ))}
 
-          {/* Okdetaljer */}
-          <div style={{ background:P.card, borderRadius:12, padding:"14px 16px", marginTop:6, marginBottom:8, boxShadow:"0 2px 8px rgba(44,31,20,0.06)", border:`1px solid ${P.border}` }}>
-            <div style={{ fontSize:10, letterSpacing:"0.15em", textTransform:"uppercase", color:P.muted, marginBottom:10, paddingBottom:8, borderBottom:`1px solid ${P.border}` }}>Okdetaljer</div>
-            <StitchCard label="5. Slutmål för ok — maskor runt hela kroppen innan delning för ärmar" color={C.skuldra} suggestedMaskor={results.skuldra.maskor} />
-            <StitchCard label="6. Fördelning av maskor — ärm och byst innan upplägning under ärm"  color={C.overarm} suggestedMaskor={results.overarm.maskor} />
-          </div>
-
-          {/* Längder */}
-          <div style={{ background:P.card, borderRadius:12, padding:"14px 16px", marginBottom:16, boxShadow:"0 2px 8px rgba(44,31,20,0.06)", border:`1px solid ${P.border}` }}>
-            <div style={{ fontSize:10, letterSpacing:"0.15em", textTransform:"uppercase", color:P.muted, marginBottom:10, paddingBottom:8, borderBottom:`1px solid ${P.border}` }}>Längder</div>
-            <LengthCard label="7. Längd fram" color={C.lFram} suggestedCm={lengdFram} varvPerCm={vpCm} />
-            <LengthCard label="8. Längd bak"  color={C.lBak}  suggestedCm={lengdFram} varvPerCm={vpCm} />
-            <LengthCard label="9. Längd ärm"  color={C.lArm}  suggestedCm={lengdArm}  varvPerCm={vpCm} />
-          </div>
+          {/* Ok-beräkning */}
+          {results.ok && (
+            <div style={{ background:P.card, borderRadius:12, padding:"14px 16px", marginTop:6, marginBottom:16, boxShadow:"0 2px 8px rgba(44,31,20,0.06)", border:`1px solid ${P.border}` }}>
+              <div style={{ fontSize:10, letterSpacing:"0.15em", textTransform:"uppercase", color:P.muted, marginBottom:12, paddingBottom:8, borderBottom:`1px solid ${P.border}` }}>
+                Ok-beräkning
+              </div>
+              {[
+                { label:"Slutmål ok (Y = 138%)",          value:results.ok.Y,       color:C.skuldra, desc:"Totalt antal maskor i oket" },
+                { label:"Ökningsrunda 1 (Y3 = Y − 40%)", value:results.ok.Y3,      color:"#c4826a", desc:"Första ökning efter halsen" },
+                { label:"Ökningsrunda 2 (Y2 = Y − 33%)", value:results.ok.Y2,      color:"#a07850", desc:"Andra ökning" },
+                { label:"Ökningsrunda 3 (Y1 = Y − 25%)", value:results.ok.Y1,      color:"#7ab08a", desc:"Tredje ökning innan delning för ärmar" },
+                { label:"Mudd ärm (20%)",                 value:results.ok.armMudd, color:C.handled, desc:"Maskor vid ärmens mudd" },
+                { label:"Mudd byst (85%)",                value:results.ok.bystMudd,color:C.byst,    desc:"Maskor vid kroppens nederkant" },
+              ].map(({ label, value, color, desc }) => (
+                <div key={label} style={{
+                  display:"flex", justifyContent:"space-between", alignItems:"center",
+                  padding:"10px 12px", marginBottom:6, borderRadius:8,
+                  background:P.bg, border:`1px solid ${P.border}`, borderLeft:`4px solid ${color}`
+                }}>
+                  <div>
+                    <div style={{ fontSize:12, fontWeight:"bold", color:P.text }}>{label}</div>
+                    <div style={{ fontSize:11, color:P.muted, marginTop:2 }}>{desc}</div>
+                  </div>
+                  <div style={{ fontSize:22, fontWeight:"bold", color, flexShrink:0, marginLeft:12 }}>
+                    {value} <span style={{ fontSize:12, color:P.muted }}>maskor</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </>}
 
         <div style={{ textAlign:"center", fontSize:10, color:"#c0b0a0", paddingBottom:20, letterSpacing:"0.08em" }}>
